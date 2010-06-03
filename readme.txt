@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: buddypress, message, private message, pm, spam
 Requires at least: WP 2.9 & BuddyPress 1.2
 Tested up to: WP 2.9.2 & BuddyPress 1.2.3
-Stable tag: 1.0
+Stable tag: 1.1
 
 This plugin only allows friends and site administrators to send private messages on your BuddyPress site.
 
@@ -29,14 +29,18 @@ You'll get a nice error message saying that your message wasn't sent because you
 Site administrators can always send private messages.
 
 
+#### Can I allow certain user IDs to be private messaged without being friends? ####
+
+As of version 1.1, you can!  Simply add the following line to /wp-config.php or /wp-content/plugins/bp-custom.php:
+
+`define( 'BP_PM_RECIPIENT_WHITELIST', '1,2' );`
+
+In the example above, anyone can send a message to user ID 1 and 2 without needing to be their friend.
+
+
 #### I noticed that the error message is in English! ####
 
 Yes it is.  But fear not!  You can send me a translation file for inclusion in the next release of the plugin.
-
-
-== Future versions ==
-
-* Allow PMs for reciprocal follower relationships when the BP Following plugin is released.
 
 
 == Donate! ==
@@ -51,6 +55,12 @@ If you downloaded this plugin and like it, please:
 
 
 == Changelog ==
+
+= 1.1 =
+* Added support to whitelist recipient user IDs
+* Make sure site admins can always view the "Send Private Message" button (thanks to intimez and brianglanz for reporting)
+* Added check to see if friends component is enabled
+* Restructured the plugin into a class
 
 = 1.0 =
 * First version!

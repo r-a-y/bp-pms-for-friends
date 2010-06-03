@@ -5,7 +5,7 @@ Description: This plugin only allows friends and site administrators to send pri
 Author: r-a-y
 Author URI: http://buddypress.org/community/members/r-a-y
 Plugin URI: http://buddypress.org/community/groups/buddypress-private-message-for-friends-only
-Version: 1.0
+Version: 1.1
 
 License: CC-GNU-GPL http://creativecommons.org/licenses/GPL/2.0/
 Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CT8KZGFEVA3R6
