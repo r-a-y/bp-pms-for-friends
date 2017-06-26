@@ -27,21 +27,28 @@ class BP_PMs_Friends {
 		add_action( 'wp_head', array( $this, 'hide_pm_btn' ), 99 );
 	}
 
+	/**
+	 * Check recipients before saving message.
+	 *
+	 * @param BP_Messages_Message $message_info Current message object.
+	 */
 	public function check_recipients( $message_info ) {
 		$recipients = $message_info->recipients;
 
-		$u = 0; // # of recipients in the message that are not friends
+		$u = 0;
 
 		foreach ( $recipients as $key => $recipient ) {
 			$is_whitelisted = in_array( $recipient->user_id, $this->whitelist_ids );
 
 			// if recipient is whitelisted, skip check
-			if( $is_whitelisted )
+			if ( $is_whitelisted ) {
 				continue;
+			}
 
 			// if site admin, skip check
-			if( $GLOBALS['bp']->loggedin_user->is_site_admin == 1 )
+			if( $GLOBALS['bp']->loggedin_user->is_site_admin == 1 ) {
 				continue;
+			}
 
 			// make sure sender is not trying to send to themselves
 			if ( $recipient->user_id == bp_loggedin_user_id() ) {
@@ -49,22 +56,35 @@ class BP_PMs_Friends {
 				continue;
 			}
 
-			// check if the attempted recipient is not a friend
-			// if we get a match, remove person from recipient list
-			// if there are no recipients, BP_Messages_Message:send() will return false and thus message isn't sent!
+			/*
+			 * Check if the attempted recipient is not a friend.
+			 *
+			 * If we get a match, remove person from recipient list. If there are no
+			 * recipients, BP_Messages_Message:send() will bail out of sending.
+			 */
 			if ( ! friends_check_friendship( bp_loggedin_user_id(), $recipient->user_id ) ) {
 				unset( $message_info->recipients[$key] );
 				$u++;
 			}
 		}
 
-		// if there are multiple recipients and if one of the recipients is not a friend, remove everyone from the recipient's list
-		// this is done to prevent the message from being sent to anyone and is another spam prevention measure
-		if ( count( $recipients ) > 1 && $u > 0 )
+		/*
+		 * If there are multiple recipients and if one of the recipients is not a
+		 * friend, remove everyone from the recipient's list.
+		 *
+		 * This is done to prevent the message from being sent to anyone and is
+		 * another spam prevention measure.
+		 */
+		if ( count( $recipients ) > 1 && $u > 0 ) {
 			unset( $message_info->recipients );
+		}
 	}
 
-	// thanks to Paul Gibbs for this technique!
+	/**
+	 * Localization overrider method.
+	 *
+	 * Thanks to Paul Gibbs for this technique!
+	 */
 	public function override_bp_l10n() {
 		global $l10n;
 	
@@ -79,7 +99,10 @@ class BP_PMs_Friends {
 		unset( $mo );
 	}
 
-	// low-level way of removing the private message button if not friends, whitelisted, or site admin
+	/**
+	 * low-level way of removing the private message button if not friends,
+	 * whitelisted, or site admin
+	 */
 	public function hide_pm_btn() {
 		// check if we're on a member's page
 		if ( bp_displayed_user_id() ) {
@@ -93,7 +116,11 @@ class BP_PMs_Friends {
 		}
 	}
 
-	// should this be translatable?
+	/**
+	 * Display requirement if Friends component isn't active.
+	 *
+	 * @todo l10n?
+	 */
 	public function display_requirement() {
 		echo '<div class="error fade"><p>BuddyPress Private Messages for Friends Only requires the BuddyPress <strong>Friends component</strong> to be enabled. Please <a href="admin.php?page=bp-component-setup">enable</a> this now.</p></div>';
 	}
@@ -101,4 +128,3 @@ class BP_PMs_Friends {
 
 $pms_friends = new BP_PMs_Friends();
 $pms_friends->init();
-?>
