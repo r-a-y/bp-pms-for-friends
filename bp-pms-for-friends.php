@@ -27,7 +27,7 @@ class BP_PMs_Friends {
 
 		// Hooks.
 		add_action( 'messages_message_before_save', array( $this, 'check_recipients' ) );
-		add_action( 'init', array( $this, 'override_bp_l10n' ), 9 );
+		add_action( 'template_redirect', array( $this, 'override_bp_l10n' ), 9 );
 		add_action( function_exists( 'bp_is_user' ) ? 'bp_members_screen_display_profile' : 'init', array( $this, 'hide_pm_btn' ), 99 );
 	}
 
@@ -85,21 +85,28 @@ class BP_PMs_Friends {
 	}
 
 	/**
-	 * Localization overrider method.
+	 * Error message overrider method.
 	 *
 	 * Thanks to Paul Gibbs for this technique!
 	 */
 	public function override_bp_l10n() {
-		global $l10n;
-	
+		// Bail if not on the compose screen.
+		if ( ! bp_is_messages_compose_screen() ) {
+			return;
+		}
+
+		$message = __( 'You are not friends with the person(s) you are attempting to send a message to.  Your message has not been sent.', 'bp-pms' );
+
 		$mo = new MO();
-		$mo->add_entry( array( 'singular' => 'There was an error sending that message, please try again', 'translations' => array( __ ('You are not friends with the person(s) you are attempting to send a message to.  Your message has not been sent.', 'bp-pms' ) ) ) );
-		$mo->add_entry( array( 'singular' => 'There was a problem sending that reply. Please try again.', 'translations' => array( __ ('You are not friends with the person(s) you are attempting to send a message to.  Your message has not been sent.', 'bp-pms' ) ) ) );	
+		$mo->add_entry( array( 'singular' => 'There was an error sending that message, please try again', 'translations' => array( $message ) ) );
+		$mo->add_entry( array( 'singular' => 'There was a problem sending that reply. Please try again.', 'translations' => array( $message ) ) );
+		$mo->add_entry( array( 'singular' => 'Message was not sent. Please try again.', 'translations' => array( $message ) ) );
 	
-		if ( isset( $l10n['buddypress'] ) )
-			$mo->merge_with( $l10n['buddypress'] );
+		if ( isset( $GLOBALS['l10n']['buddypress'] ) ) {
+			$mo->merge_with( $GLOBALS['l10n']['buddypress'] );
+		}
 	
-		$l10n['buddypress'] = &$mo;
+		$GLOBALS['l10n']['buddypress'] = &$mo;
 		unset( $mo );
 	}
 
