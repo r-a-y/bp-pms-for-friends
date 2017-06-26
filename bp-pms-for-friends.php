@@ -80,7 +80,7 @@ class BP_PMs_Friends {
 		global $bp;
 
 		// check if we're on a member's page
-		if ( bp_is_member() ) {
+		if ( bp_displayed_user_id() ) {
 			$is_whitelisted = in_array( $bp->displayed_user->id, $this->whitelist_ids );
 
 			if ( !friends_check_friendship( $bp->loggedin_user->id, $bp->displayed_user->id ) && !$is_whitelisted && ( $bp->loggedin_user->is_site_admin != 1 ) ) :
