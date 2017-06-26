@@ -22,8 +22,6 @@ class BP_PMs_Friends {
 	}
 
 	function check_recipients( $message_info ) {
-		global $bp;
-
 		$recipients = $message_info->recipients;
 
 		$u = 0; // # of recipients in the message that are not friends
@@ -36,11 +34,11 @@ class BP_PMs_Friends {
 				continue;
 
 			// if site admin, skip check
-			if( $bp->loggedin_user->is_site_admin == 1 )
+			if( $GLOBALS['bp']->loggedin_user->is_site_admin == 1 )
 				continue;
 
 			// make sure sender is not trying to send to themselves
-			if ( $recipient->user_id == $bp->loggedin_user->id ) {
+			if ( $recipient->user_id == bp_loggedin_user_id() ) {
 				unset( $message_info->recipients[$key] );
 				continue;
 			}
@@ -48,7 +46,7 @@ class BP_PMs_Friends {
 			// check if the attempted recipient is not a friend
 			// if we get a match, remove person from recipient list
 			// if there are no recipients, BP_Messages_Message:send() will return false and thus message isn't sent!
-			if ( !friends_check_friendship( $bp->loggedin_user->id, $recipient->user_id ) ) {
+			if ( ! friends_check_friendship( bp_loggedin_user_id(), $recipient->user_id ) ) {
 				unset( $message_info->recipients[$key] );
 				$u++;
 			}
@@ -77,13 +75,11 @@ class BP_PMs_Friends {
 
 	// low-level way of removing the private message button if not friends, whitelisted, or site admin
 	function hide_pm_btn() {
-		global $bp;
-
 		// check if we're on a member's page
 		if ( bp_displayed_user_id() ) {
-			$is_whitelisted = in_array( $bp->displayed_user->id, $this->whitelist_ids );
+			$is_whitelisted = in_array( bp_displayed_user_id(), $this->whitelist_ids );
 
-			if ( !friends_check_friendship( $bp->loggedin_user->id, $bp->displayed_user->id ) && !$is_whitelisted && ( $bp->loggedin_user->is_site_admin != 1 ) ) :
+			if ( ! friends_check_friendship( bp_loggedin_user_id(), bp_displayed_user_id() ) && ! $is_whitelisted && ( $GLOBALS['bp']->loggedin_user->is_site_admin != 1 ) ) :
 	?>
 		<style type="text/css">#send-private-message {display:none;}</style>
 	<?php
