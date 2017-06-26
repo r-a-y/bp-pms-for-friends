@@ -8,21 +8,23 @@ class BP_PMs_Friends {
 	 */
 	var $whitelist_ids = array();
 
+	/**
+	 * Init method.
+	 */
 	public function init() {
-		if ( class_exists( 'BP_Friends_Friendship' ) ) {
-			load_plugin_textdomain( 'bp-pms', false, dirname(plugin_basename(__FILE__)) . '/lang' );
-
-			if ( defined( 'BP_PM_RECIPIENT_WHITELIST' ) ) {
-				$this->whitelist_ids = explode( ',', BP_PM_RECIPIENT_WHITELIST );
-			}
-
-			add_action( 'messages_message_before_save', array( &$this, 'check_recipients' ) );
-			add_action( 'init', array( &$this, 'override_bp_l10n' ), 9 );
-			add_action( 'wp_head', array( &$this, 'hide_pm_btn' ), 99 );
+		if ( ! class_exists( 'BP_Friends_Friendship' ) ) {
+			add_action( 'admin_notices', array( $this, 'display_requirement' ) );
 		}
-		else {
-			add_action( 'admin_notices', array( &$this, 'display_requirement' ) );
+
+		load_plugin_textdomain( 'bp-pms', false, dirname(plugin_basename(__FILE__)) . '/lang' );
+
+		if ( defined( 'BP_PM_RECIPIENT_WHITELIST' ) ) {
+			$this->whitelist_ids = explode( ',', BP_PM_RECIPIENT_WHITELIST );
 		}
+
+		add_action( 'messages_message_before_save', array( $this, 'check_recipients' ) );
+		add_action( 'init', array( $this, 'override_bp_l10n' ), 9 );
+		add_action( 'wp_head', array( $this, 'hide_pm_btn' ), 99 );
 	}
 
 	public function check_recipients( $message_info ) {
