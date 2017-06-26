@@ -1,16 +1,20 @@
 <?php
 class BP_PMs_Friends {
 
-	var $whitelist_ids;
+	/**
+	 * User IDs that shouldn't be affected by this plugin.
+	 *
+	 * @var array
+	 */
+	var $whitelist_ids = array();
 
-	function init() {
+	public function init() {
 		if ( class_exists( 'BP_Friends_Friendship' ) ) {
 			load_plugin_textdomain( 'bp-pms', false, dirname(plugin_basename(__FILE__)) . '/lang' );
 
-			if( defined( "BP_PM_RECIPIENT_WHITELIST" ) )
-				$this->whitelist_ids = explode(',', BP_PM_RECIPIENT_WHITELIST );
-			else
-				$this->whitelist_ids = array();
+			if ( defined( 'BP_PM_RECIPIENT_WHITELIST' ) ) {
+				$this->whitelist_ids = explode( ',', BP_PM_RECIPIENT_WHITELIST );
+			}
 
 			add_action( 'messages_message_before_save', array( &$this, 'check_recipients' ) );
 			add_action( 'init', array( &$this, 'override_bp_l10n' ), 9 );
@@ -21,7 +25,7 @@ class BP_PMs_Friends {
 		}
 	}
 
-	function check_recipients( $message_info ) {
+	public function check_recipients( $message_info ) {
 		$recipients = $message_info->recipients;
 
 		$u = 0; // # of recipients in the message that are not friends
@@ -59,7 +63,7 @@ class BP_PMs_Friends {
 	}
 
 	// thanks to Paul Gibbs for this technique!
-	function override_bp_l10n() {
+	public function override_bp_l10n() {
 		global $l10n;
 	
 		$mo = new MO();
@@ -74,7 +78,7 @@ class BP_PMs_Friends {
 	}
 
 	// low-level way of removing the private message button if not friends, whitelisted, or site admin
-	function hide_pm_btn() {
+	public function hide_pm_btn() {
 		// check if we're on a member's page
 		if ( bp_displayed_user_id() ) {
 			$is_whitelisted = in_array( bp_displayed_user_id(), $this->whitelist_ids );
@@ -88,7 +92,7 @@ class BP_PMs_Friends {
 	}
 
 	// should this be translatable?
-	function display_requirement() {
+	public function display_requirement() {
 		echo '<div class="error fade"><p>BuddyPress Private Messages for Friends Only requires the BuddyPress <strong>Friends component</strong> to be enabled. Please <a href="admin.php?page=bp-component-setup">enable</a> this now.</p></div>';
 	}
 }
