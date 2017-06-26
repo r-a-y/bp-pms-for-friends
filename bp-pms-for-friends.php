@@ -101,11 +101,11 @@ class BP_PMs_Friends {
 		$mo->add_entry( array( 'singular' => 'There was an error sending that message, please try again', 'translations' => array( $message ) ) );
 		$mo->add_entry( array( 'singular' => 'There was a problem sending that reply. Please try again.', 'translations' => array( $message ) ) );
 		$mo->add_entry( array( 'singular' => 'Message was not sent. Please try again.', 'translations' => array( $message ) ) );
-	
+
 		if ( isset( $GLOBALS['l10n']['buddypress'] ) ) {
 			$mo->merge_with( $GLOBALS['l10n']['buddypress'] );
 		}
-	
+
 		$GLOBALS['l10n']['buddypress'] = &$mo;
 		unset( $mo );
 	}
