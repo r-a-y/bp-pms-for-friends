@@ -12,19 +12,23 @@ class BP_PMs_Friends {
 	 * Init method.
 	 */
 	public function init() {
+		// Admin notice.
 		if ( ! class_exists( 'BP_Friends_Friendship' ) ) {
 			add_action( 'admin_notices', array( $this, 'display_requirement' ) );
 		}
 
+		// 110n.
 		load_plugin_textdomain( 'bp-pms', false, dirname(plugin_basename(__FILE__)) . '/lang' );
 
+		// Set up recipient whitelist.
 		if ( defined( 'BP_PM_RECIPIENT_WHITELIST' ) ) {
 			$this->whitelist_ids = explode( ',', BP_PM_RECIPIENT_WHITELIST );
 		}
 
+		// Hooks.
 		add_action( 'messages_message_before_save', array( $this, 'check_recipients' ) );
 		add_action( 'init', array( $this, 'override_bp_l10n' ), 9 );
-		add_action( 'wp_head', array( $this, 'hide_pm_btn' ), 99 );
+		add_action( function_exists( 'bp_is_user' ) ? 'bp_members_screen_display_profile' : 'init', array( $this, 'hide_pm_btn' ), 99 );
 	}
 
 	/**
@@ -104,15 +108,27 @@ class BP_PMs_Friends {
 	 * whitelisted, or site admin
 	 */
 	public function hide_pm_btn() {
-		// check if we're on a member's page
-		if ( bp_displayed_user_id() ) {
-			$is_whitelisted = in_array( bp_displayed_user_id(), $this->whitelist_ids );
+		// Bail if user isn't logged in or not on a user page.
+		if ( ! is_user_logged_in() || ! bp_displayed_user_id() ) {
+			return;
+		}
 
-			if ( ! friends_check_friendship( bp_loggedin_user_id(), bp_displayed_user_id() ) && ! $is_whitelisted && ( $GLOBALS['bp']->loggedin_user->is_site_admin != 1 ) ) :
-	?>
-		<style type="text/css">#send-private-message {display:none;}</style>
-	<?php
-			endif;
+		$is_whitelisted = in_array( bp_displayed_user_id(), $this->whitelist_ids );
+
+		/*
+		 * Remove PM button if:
+		 *  - displayed user isn't on whitelist, AND
+		 *  - logged-in user isn't a site admin, AND
+		 *  - logged-in user isn't a friend of the displayed user.
+		 */
+		if ( ! $is_whitelisted && ( $GLOBALS['bp']->loggedin_user->is_site_admin != 1 ) && ! friends_check_friendship( bp_loggedin_user_id(), bp_displayed_user_id() ) ) {
+			// For BP 1.5+.
+			remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
+
+			// For BP 1.2 and below.
+			if ( ! function_exists( 'bp_is_user' ) ) {
+				echo '<style type="text/css">#send-private-message {display:none;}</style>';
+			}
 		}
 	}
 
