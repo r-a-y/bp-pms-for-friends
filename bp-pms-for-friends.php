@@ -104,8 +104,14 @@ class BP_PMs_Friends {
 	}
 
 	/**
-	 * low-level way of removing the private message button if not friends,
-	 * whitelisted, or site admin
+	 * Remove the private message button on user pages.
+	 *
+	 * The button is removed if:
+	 *  - displayed user isn't on whitelist, AND
+	 *  - logged-in user isn't a site admin, AND
+	 *  - logged-in user isn't a friend of the displayed user.
+	 *
+	 * In BP 1.5, button is removed entirely. In BP <= 1.2, button is just hidden.
 	 */
 	public function hide_pm_btn() {
 		// Bail if user isn't logged in or not on a user page.
@@ -115,12 +121,7 @@ class BP_PMs_Friends {
 
 		$is_whitelisted = in_array( bp_displayed_user_id(), $this->whitelist_ids );
 
-		/*
-		 * Remove PM button if:
-		 *  - displayed user isn't on whitelist, AND
-		 *  - logged-in user isn't a site admin, AND
-		 *  - logged-in user isn't a friend of the displayed user.
-		 */
+		// Hide the button.
 		if ( ! $is_whitelisted && ( $GLOBALS['bp']->loggedin_user->is_site_admin != 1 ) && ! friends_check_friendship( bp_loggedin_user_id(), bp_displayed_user_id() ) ) {
 			// For BP 1.5+.
 			remove_action( 'bp_member_header_actions', 'bp_send_private_message_button', 20 );
