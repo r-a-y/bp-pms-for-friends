@@ -6,7 +6,7 @@ Requires at least: WP 2.9 & BuddyPress 1.2
 Tested up to: WP 4.8 & BuddyPress 2.9
 Stable tag: 1.1
 
-This plugin only allows friends and site administrators to send private messages on your BuddyPress site.
+Only allow friends and site administrators to send private messages on your BuddyPress site.
 
 == Description ==
 

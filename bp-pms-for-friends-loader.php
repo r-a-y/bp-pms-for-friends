@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: BuddyPress Private Messages for Friends Only
-Description: Only allows friends and site administrators to send private messages on your BuddyPress site.
+Description: Only allow friends and site administrators to send private messages on your BuddyPress site.
 Author: r-a-y
 Author URI: http://profiles.wordpress.org/r-a-y
 Version: 1.2
