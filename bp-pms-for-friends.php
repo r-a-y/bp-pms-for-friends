@@ -135,7 +135,9 @@ class BP_PMs_Friends {
 
 			// For BP 1.2 and below.
 			if ( ! function_exists( 'bp_is_user' ) ) {
-				echo '<style type="text/css">#send-private-message {display:none;}</style>';
+				add_action( 'wp_head', function() {
+					echo '<style type="text/css">#send-private-message {display:none;}</style>';
+				}, 99 );
 			}
 		}
 	}
